@@ -29,14 +29,25 @@ namespace Pedidos_CPT
             pedidos.Add(new ClsPedidos { RangoInicial = 1001, RangoFinal = 5000, Descuento = 0.05, Codigo = "GU", Ciudad = "Guayaquil", Impuesto = 0.08 });
             pedidos.Add(new ClsPedidos { RangoInicial = 5001, RangoFinal = 7000, Descuento = 0.07, Codigo = "CU", Ciudad = "Cuenca", Impuesto = 0.09 });
             pedidos.Add(new ClsPedidos { RangoInicial = 7001, RangoFinal = 10000, Descuento = 0.1, Codigo = "AM", Ciudad = "Ambato", Impuesto = 0.1 });
-            pedidos.Add(new ClsPedidos { RangoInicial = 10001, RangoFinal = -1, Descuento = 0.12, Codigo = "LO", Ciudad = "Loja", Impuesto = 0.06 });
+            pedidos.Add(new ClsPedidos { RangoInicial = 10001, RangoFinal = int.MaxValue, Descuento = 0.12, Codigo = "LO", Ciudad = "Loja", Impuesto = 0.06 });
         }
 
-        public double Calcular(int cantidad, double precio, string provincia)
+        public double CalcularXCiudad(int cantidad, double precio, string ciudad)
         {
+            double valor = cantidad * precio;
             var tmp = from p in pedidos
-                      where p.Codigo == provincia
-                      select cantidad * precio;
+                      where p.Codigo == ciudad
+                      select valor + (valor * p.Impuesto) - (valor * p.Descuento);
+            return tmp.SingleOrDefault();
+        }
+
+
+        public double CalcularXRango(int cantidad, double precio)
+        {
+            double valor = cantidad * precio;
+            var tmp = from p in pedidos
+                      where p.RangoInicial >= precio && p.RangoInicial <= precio
+                      select valor + (valor * p.Impuesto) - (valor * p.Descuento);
             return tmp.SingleOrDefault();
         }
     }
